@@ -1,0 +1,27 @@
+{
+  "name": "library-c3d-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/mongodb": "^4.0.6",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "mongodb": "^6.16.0",
+    "reflect-metadata": "^0.2.2",
+    "swiper": "^11.2.8",
+    "typeorm": "^0.3.24",
+    "vue": "^3.5.13",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vue-router": "^4.3.1",
+    "vite-plugin-vue-devtools": "^7.7.2"
+  },
+  "devDependencies": {
+    "vite": "^6.2.4"
+  }
+}
