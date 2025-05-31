@@ -26,8 +26,7 @@
     <!-- Menú FAB flotante -->
     <div class="fab-container">
       <!-- Botón para agregar libro -->
-      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar libro"
-        @click="showAddForm = true">
+      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar libro" @click="showAddForm = true">
         <i class="fas fa-book-medical"></i>
       </button>
 
@@ -39,7 +38,7 @@
 
       <!-- Botón para agregar autor -->
       <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar autor"
-        @click="showAuthorSelector = true">
+        @click="showAddAuthorForm = true">
         <i class="fas fa-user-plus"></i>
       </button>
 
@@ -64,11 +63,15 @@ import AuthorSelector from './components/AuthorSelector.vue';
 import GenreSelector from './components/GenreSelector.vue';
 import AuthorList from './components/AuthorList.vue';
 import GenreList from './components/GenreList.vue';
+import AddAuthor from './components/AddAuthor.vue';
+import { addAuthor } from './services/authorService';
+import AddGenre from './components/AddGenre.vue';
+import { addGenre } from './services/genreService';
 
 
 export default {
   name: 'App',
-  components: { Header, AddBook, EditBook, BookList, Footer, AuthorSelector, GenreSelector, AuthorList, GenreList },
+  components: { Header, AddBook, EditBook, BookList, Footer, AuthorSelector, GenreSelector, AuthorList, GenreList, AddAuthor, AddGenre },
   data() {
     return {
       books: [],
@@ -85,7 +88,9 @@ export default {
       selectedAuthor: null,
       selectedGenre: null,
       showAuthorListView: false,
-      showGenreListView: false
+      showGenreListView: false,
+      showAddAuthorForm: false,
+      showAddGenreForm: false
     };
   },
   computed: {
@@ -172,6 +177,28 @@ export default {
       this.selectedAuthor = author;
       this.showAuthorSelector = false;
     },
+    async handleAuthorAdded(author) {
+      const response = await addAuthor(author);
+      this.authors.push(response.data);
+      this.showAddAuthorForm = false;
+    },
+
+    async handleGenreAdded(genre) {
+      const response = await addGenre(genre);
+      this.genres.push(response.data);
+      this.showAddGenreForm = false;
+    },
+    async handleAddAuthor(authorData) {
+      try {
+        const response = await addAuthor(authorData);
+        // Opcional: actualizar lista de autores si la usas globalmente
+        this.showAddAuthorForm = false;
+        this.error = null;
+      } catch (error) {
+        this.error = 'Error al agregar el autor. Intente nuevamente.';
+      }
+    },
+
     handleGenreChanged(genre) {
       this.selectedGenre = genre;
       this.showGenreSelector = false;
@@ -189,6 +216,12 @@ export default {
     },
     showAddBookModal() {
       this.showAddForm = true;
+    },
+    showAddAuthorForm() {
+      this.showAddAuthorForm = true;
+    },
+    showAddGenreForm() {
+      this.showAddGenreForm = true;
     }
   },
   mounted() {
@@ -718,18 +751,32 @@ h2 {
 .fab:nth-child(2).fab-show {
   transition-delay: 0.05s;
 }
+
 .fab:nth-child(3).fab-show {
   transition-delay: 0.1s;
 }
+
 .fab:nth-child(4).fab-show {
   transition-delay: 0.15s;
 }
 
 
 /* Colores individuales */
-.fab-option:nth-child(1) { background-color: #3f51b5; } /* Libro */
-.fab-option:nth-child(2) { background-color: #ff9800; } /* Género */
-.fab-option:nth-child(3) { background-color: #4caf50; } /* Autor */
+.fab-option:nth-child(1) {
+  background-color: #3f51b5;
+}
+
+/* Libro */
+.fab-option:nth-child(2) {
+  background-color: #ff9800;
+}
+
+/* Género */
+.fab-option:nth-child(3) {
+  background-color: #4caf50;
+}
+
+/* Autor */
 
 .rotate {
   transform: rotate(45deg);

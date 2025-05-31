@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = 'https://c3-d-back.vercel.app/api/books';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -81,23 +81,23 @@ const normalizeResponse = (response) => {
 };
 
 // 👇 FUNCIONES EXPORTADAS
-export const getBooks = () => api.get('api/books').then(normalizeResponse);
+export const getBooks = () => api.get('https://c3-d-back.vercel.app/api/books').then(normalizeResponse);
 
 export const addBook = async (book) => {
   const validated = validateBook(book);
-  const response = await api.post('api/books', validated);
+  const response = await api.post('https://c3-d-back.vercel.app/api/books', validated);
   return normalizeResponse(response);
 };
 
 export const updateBook = async (id, book) => {
   validateId(id);
   const validated = validateBook(book);
-  const response = await api.put(`api/books/${id}`, validated);
+  const response = await api.put(`https://c3-d-back.vercel.app/api/books/${id}`, validated);
   return normalizeResponse(response);
 };
 
 export const deleteBook = async (id) => {
   validateId(id);
-  const response = await api.delete(`api/books/${id}`);
+  const response = await api.delete(`https://c3-d-back.vercel.app/api/books/${id}`);
   return normalizeResponse(response);
 };

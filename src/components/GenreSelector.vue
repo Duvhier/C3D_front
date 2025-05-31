@@ -35,7 +35,7 @@
     methods: {
       async fetchGenres() {
         try {
-          const res = await fetch('http://localhost:3000/api/genres');
+          const res = await fetch('https://c3-d-back.vercel.app/api/genres');
           const data = await res.json();
           this.genres = data;
         } catch (err) {
