@@ -81,11 +81,11 @@ export default {
 
       // Verificar si el autor existe
       try {
-        const AuthorRes = await fetch(`https://c3-d-back.vercel.app/api/authors?name=${encodeURIComponent(authorName)}`);
+        const AuthorRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/authors?name=${encodeURIComponent(authorName)}`);
         const authorData = await AuthorRes.json();
 
         if (!authorData.found) {
-          const createAuthorRes = await fetch(`https://c3-d-back.vercel.app/api/authors`, {
+          const createAuthorRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/authors`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: authorName })
@@ -103,11 +103,11 @@ export default {
 
       // Verificar si el género existe
       try {
-        const genreRes = await fetch(`https://c3-d-back.vercel.app/api/genres?name=${encodeURIComponent(genreName)}`);
+        const genreRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/genres?name=${encodeURIComponent(genreName)}`);
         const genreData = await genreRes.json();
 
         if (!genreData.found) {
-          const createGenreRes = await fetch(`https://c3-d-back.vercel.app/api/genres`, {
+          const createGenreRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/genres`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: genreName })

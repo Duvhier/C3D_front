@@ -25,7 +25,7 @@
     methods: {
       async fetchAuthors() {
         try {
-          const res = await fetch('https://c3-d-back.vercel.app/api/authors');
+          const res = await fetch('https://c3-d-back-nkt5.onrender.com/api/authors');
           const data = await res.json();
           this.authors = data;
         } catch (err) {
