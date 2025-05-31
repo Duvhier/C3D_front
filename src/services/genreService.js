@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://c3-d-back-nkt5.vercel.app/api/genres' || import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'https://c3-d-back-nkt5.vercel.app';
 
 export const getGenres = async () => {
 
@@ -26,7 +26,7 @@ export const addGenre = async (genre) => {
 
 export const updateGenre = async (id, genre) => {
   try {
-    const response = await axios.put(`https://c3-d-back-nkt5.vercel.app/api/genres/${id}`, genre);
+    const response = await axios.put(`${API_URL}/api/genres/${id}`, genre);
     return response.data;
   } catch (error) {
     console.error('Error updating genre:', error);
@@ -36,7 +36,7 @@ export const updateGenre = async (id, genre) => {
 
 export const deleteGenre = async (id) => {
   try {
-    const response = await axios.delete(`https://c3-d-back-nkt5.vercel.app/api/genres/${id}`);
+    const response = await axios.delete(`${API_URL}/api/genres/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting genre:', error);
@@ -46,7 +46,7 @@ export const deleteGenre = async (id) => {
 
 export const getGenreById = async (id) => {
   try {
-    const response = await axios.get(`https://c3-d-back-nkt5.vercel.app/api/genres/${id}`);
+    const response = await axios.get(`${API_URL}/api/genres/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching genre by ID:', error);
@@ -56,7 +56,7 @@ export const getGenreById = async (id) => {
 
 export const searchGenres = async (query) => {
   try {
-    const response = await axios.get(`https://c3-d-back-nkt5.vercel.app/api/genres/search?query=${query}`);
+    const response = await axios.get(`${API_URL}/api/genres/search?query=${query}`);
     return response.data;
   } catch (error) {
     console.error('Error searching genres:', error);
@@ -66,7 +66,7 @@ export const searchGenres = async (query) => {
 
 export const getGenreBooks = async (id) => {
   try {
-    const response = await axios.get(`https://c3-d-back-nkt5.vercel.app/api/genres/${id}/books`);
+    const response = await axios.get(`${API_URL}/api/genres/${id}/books`);
     return response.data;
   } catch (error) {
     console.error('Error fetching genre books:', error);
