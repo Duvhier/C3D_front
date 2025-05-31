@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://c3-d-back.vercel.app/api/books';
+const API_URL = 'https://c3-d-back.vercel.app/api/books' || import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: API_URL,

@@ -217,10 +217,10 @@ export default {
     showAddBookModal() {
       this.showAddForm = true;
     },
-    showAddAuthorForm() {
+    toggleAddAuthorForm() {
       this.showAddAuthorForm = true;
     },
-    showAddGenreForm() {
+    toggleAddGenreForm() {
       this.showAddGenreForm = true;
     }
   },
