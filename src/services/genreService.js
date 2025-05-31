@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://c3-d-back-nkt5.vercel.app';
+const API_URL = import.meta.env.VITE_API_URL || 'https://c3-d-back-nkt5.onrender.com';
 
 export const getGenres = async () => {
 
