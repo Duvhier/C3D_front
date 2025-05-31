@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://c3-d-back.vercel.app/api/authors' || import.meta.env.VITE_API_URL;
+const API_URL = 'https://c3-d-back-nkt5.vercel.app/api/authors' || import.meta.env.VITE_API_URL;
 
 export const getAuthors = async () => {
   try {
