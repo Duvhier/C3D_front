@@ -6,7 +6,12 @@
         <h1>Agregar Libro</h1>
 
         <div class="form-group">
-          <input v-model="title" placeholder="Título del libro" required @input="validateForm" />
+          <input
+            v-model="title"
+            placeholder="Título del libro"
+            required
+            @input="validateForm"
+          />
         </div>
 
         <div class="form-group">
@@ -14,7 +19,12 @@
         </div>
 
         <div class="form-group">
-          <input v-model="publishedDate" type="date" required @input="validateForm" />
+          <input
+            v-model="publishedDate"
+            type="date"
+            required
+            @input="validateForm"
+          />
         </div>
 
         <div class="form-group">
@@ -22,7 +32,11 @@
         </div>
 
         <div class="form-group">
-          <input v-model="coverUrl" placeholder="URL de la portada (opcional)" @input="validateForm" />
+          <input
+            v-model="coverUrl"
+            placeholder="URL de la portada (opcional)"
+            @input="validateForm"
+          />
         </div>
 
         <div v-if="coverUrl" class="form-group preview">
@@ -68,7 +82,8 @@ export default {
     },
     validateForm() {
       this.error = '';
-      this.isFormValid = this.title.trim() !== '' &&
+      this.isFormValid =
+        this.title.trim() !== '' &&
         this.author.trim() !== '' &&
         this.publishedDate.trim() !== '' &&
         this.genre.trim() !== '';
@@ -81,49 +96,35 @@ export default {
 
       // Verificar si el autor existe
       try {
-        const AuthorRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/authors?name=${encodeURIComponent(authorName)}`);
-        const authorData = await AuthorRes.json();
+        const res = await fetch('https://c3-d-back-nkt5.onrender.com/api/authors');
+        const data = await res.json();
+        const authorExists = data.some(a => a.name === authorName);
 
-        if (!authorData.found) {
-          const createAuthorRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/authors`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: authorName })
-          });
-
-          if (!createAuthorRes.ok) {
-            this.error = 'Error al crear el autor.';
-            return;
-          }
+        if (!authorExists) {
+          this.error = 'El autor seleccionado no es válido.';
+          return;
         }
       } catch (err) {
-        this.error = 'Error verificando o creando autor.';
+        this.error = 'Error al verificar el autor.';
         return;
       }
 
       // Verificar si el género existe
       try {
-        const genreRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/genres?name=${encodeURIComponent(genreName)}`);
-        const genreData = await genreRes.json();
+        const res = await fetch('https://c3-d-back-nkt5.onrender.com/api/genres');
+        const data = await res.json();
+        const genreExists = data.some(g => g.name === genreName);
 
-        if (!genreData.found) {
-          const createGenreRes = await fetch(`https://c3-d-back-nkt5.onrender.com/api/genres`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: genreName })
-          });
-
-          if (!createGenreRes.ok) {
-            this.error = 'Error al crear el género.';
-            return;
-          }
+        if (!genreExists) {
+          this.error = 'El género seleccionado no es válido.';
+          return;
         }
       } catch (err) {
-        this.error = 'Error verificando o creando género.';
+        this.error = 'Error al verificar el género.';
         return;
       }
 
-      // Enviar datos del libro
+      // Emitir libro válido
       const bookData = {
         title: this.title.trim(),
         author: authorName,
@@ -134,7 +135,7 @@ export default {
 
       this.$emit('add-book', bookData);
 
-      // Limpiar el formulario
+      // Reset form
       this.title = '';
       this.author = '';
       this.publishedDate = '';
@@ -145,7 +146,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .add-book-container {
@@ -210,8 +210,8 @@ input {
 .preview img {
   max-width: 100%;
   max-height: 200px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin-top: 0.5rem;
+  border-radius: 8px;
 }
 
 .form-actions {
@@ -232,7 +232,7 @@ input {
 }
 
 .submit-button {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 

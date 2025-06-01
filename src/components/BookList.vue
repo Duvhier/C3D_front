@@ -26,6 +26,7 @@
           <button @click="confirmDelete(book)" class="delete-button" title="Eliminar libro">
             Eliminar
           </button>
+
         </div>
       </div>
     </div>
@@ -87,7 +88,7 @@ export default {
       this.showModal = false;
     },
     deleteBook() {
-      const bookId = this.bookToDelete.id;
+      const bookId = this.bookToDelete._id;
       if (bookId) {
         this.$emit('delete-book', bookId);
       }

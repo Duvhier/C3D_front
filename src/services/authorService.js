@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://c3-d-back-nkt5.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || 'https://c3-d-back-nkt5.onrender.com/api/authors';
 
 export const getAuthors = async () => {
   try {
@@ -54,7 +54,7 @@ export const getAuthorById = async (id) => {
 
 export const searchAuthors = async (query) => {
   try {
-    const response = await axios.get(`${API_URL}/api/authors/search?query=${query}`);
+    const response = await axios.get(`${API_URL}/search?query=${query}`);
     return response.data;
   } catch (error) {
     console.error('Error searching authors:', error);
@@ -64,13 +64,10 @@ export const searchAuthors = async (query) => {
 
 export const getAuthorBooks = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/api/authors/${id}/books`);
+    const response = await axios.get(`${API_URL}/${id}/books`);
     return response.data;
   } catch (error) {
     console.error('Error fetching author books:', error);
     throw error;
   }
 };
-
-
-

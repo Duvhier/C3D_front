@@ -4,41 +4,58 @@
 
     <h1>Lista de Libros</h1>
     <h2>Colección de libros disponibles</h2>
+    <p style="text-align:center;">Total de libros: {{ filteredBooks.length }}</p>
 
     <p v-if="error" class="error-message">{{ error }}</p>
 
     <BookList :books="filteredBooks" :loading="loading" :error="error" @edit-book="editBook" @delete-book="deleteBook"
       :get-book-cover="getBookCover" />
-
-    <AddBook v-if="showAddForm" @add-book="handleAddBook" @cancel="showAddForm = false" />
+    <div v-if="showAddForm" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" @click="showAddForm = false">&times;</button>
+        <AddBook @add-book="handleAddBook" @cancel="showAddForm = false" />
+      </div>
+    </div>
 
     <AuthorSelector v-if="showAuthorSelector" @author-changed="handleAuthorChanged"
       @cancel="showAuthorSelector = false" />
-
     <GenreSelector v-if="showGenreSelector" @genre-changed="handleGenreChanged" @cancel="showGenreSelector = false" />
-
     <AuthorList v-if="showAuthorListView" />
-
     <GenreList v-if="showGenreListView" />
 
-    <EditBook v-if="showEditForm" :book="editingBook" @update-book="handleUpdateBook" @cancel="showEditForm = false" />
+    <div v-if="showEditForm" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" @click="showEditForm = false">&times;</button>
+        <EditBook :book="editingBook" @update-book="handleUpdateBook" @cancel="showEditForm = false" />
+      </div>
+    </div>
+    <div v-if="showAddAuthorForm" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" @click="showAddAuthorForm = false">&times;</button>
+        <AddAuthor @add-author="handleAddAuthor" @cancel="showAddAuthorForm = false" />
+      </div>
+    </div>
+    <div v-if="showAddGenreForm" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" @click="showAddGenreForm = false">&times;</button>
+        <AddGenre @add-genre="handleGenreAdded" @cancel="showAddGenreForm = false" />
+      </div>
+    </div>
 
     <!-- Menú FAB flotante -->
     <div class="fab-container">
       <!-- Botón para agregar libro -->
       <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar libro" @click="showAddForm = true">
-        <i class="fas fa-book-medical"></i>
+        <i class="fas fa-book"></i>
       </button>
 
       <!-- Botón para agregar género -->
-      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar género"
-        @click="showGenreSelector = true">
+      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar género" @click="showGenreSelector = true">
         <i class="fas fa-tag"></i>
       </button>
 
       <!-- Botón para agregar autor -->
-      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar autor"
-        @click="showAddAuthorForm = true">
+      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar autor" @click="toggleAddAuthorForm">
         <i class="fas fa-user-plus"></i>
       </button>
 
@@ -74,6 +91,8 @@ export default {
   components: { Header, AddBook, EditBook, BookList, Footer, AuthorSelector, GenreSelector, AuthorList, GenreList, AddAuthor, AddGenre },
   data() {
     return {
+      authors: [],
+      genres: [],
       books: [],
       loading: true,
       error: null,
@@ -142,9 +161,8 @@ export default {
       }
     },
     async deleteBook(id) {
-      if (!confirm('¿Desea eliminar este libro?')) return;
       try {
-        await deleteBook(id);
+        await deleteBook(id); 
         this.books = this.books.filter(book => book._id !== id);
       } catch (error) {
         this.error = 'Error al eliminar el libro. Intente nuevamente.';
@@ -436,13 +454,13 @@ h2 {
   background-color: #45a049;
 }
 
-.modal {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -452,16 +470,22 @@ h2 {
 .modal-content {
   background: white;
   padding: 2rem;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-family: 'Montserrat', sans-serif;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
 }
 
 .modal-content h2 {
   margin: 0 0 1.5rem 0;
   color: #1a237e;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #1a237e;
+  font-weight: 600;
 }
 
 .modal-content p {
@@ -476,6 +500,17 @@ h2 {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
 }
 
 .form-group {

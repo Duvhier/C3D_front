@@ -4,8 +4,7 @@
       <select v-model="selected" @change="handleChange">
         <option disabled value="">Selecciona un autor</option>
         <option v-for="a in authors" :key="a._id" :value="a.name">{{ a.name }}</option>
-      </select>
-  
+      </select>  
     </div>
   </template>
   

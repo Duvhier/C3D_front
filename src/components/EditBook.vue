@@ -30,8 +30,7 @@
           <input 
             id="publishedDate"
             v-model="bookCopy.publishedDate" 
-            type="date"
-            required 
+            type="date" 
             @input="validateForm"
           />
         </div>
