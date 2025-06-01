@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://c3-d-back-nkt5.onrender.com/api/authors';
+const isLocal = window.location.hostname === 'localhost';
+
+const API_URL = isLocal
+  ? 'http://localhost:3000' // Para desarrollo local
+  : 'https://c3-d-back-nkt5.onrender.com'; // Para producción (Render)
+
 
 export const getAuthors = async () => {
   try {
