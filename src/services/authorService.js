@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api';
+const isLocal = window.location.hostname === 'localhost';
+const API_URL = isLocal
+  ? 'http://localhost:3000/api'
+  : 'https://c3-d-back-nkt5.onrender.com/api';
 
 export const getAuthors = () => {
   return axios.get(`${API_URL}/authors`);
