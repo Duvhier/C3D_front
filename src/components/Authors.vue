@@ -2,11 +2,15 @@
   <div>
     <h1>Lista de Autores</h1>
     <h2>Colección de autores disponibles</h2>
-    <p style="text-align:center;">Total de autores: {{ filteredAuthors.length }}</p>
+    <p style="text-align:center;">Total de autores: {{ authors.length }}</p>
 
     <p v-if="error" class="error-message">{{ error }}</p>
 
-    <div class="authors-grid">
+    <div v-if="loading" class="loading">
+      <i class="fas fa-spinner fa-spin"></i> Cargando autores...
+    </div>
+
+    <div v-else class="authors-grid">
       <div v-for="author in filteredAuthors" :key="author._id" class="author-card">
         <div class="author-cover">
           <img 
@@ -61,7 +65,7 @@
 </template>
 
 <script>
-import { getAuthors, addAuthor, updateAuthor, deleteAuthor, getAuthorBooks } from '../services/authorService';
+import { getAuthors, addAuthor, updateAuthor, deleteAuthor } from '../services/authorService';
 import AddAuthor from './AddAuthor.vue';
 import EditAuthor from './EditAuthor.vue';
 
@@ -95,20 +99,12 @@ export default {
       try {
         this.loading = true;
         const response = await getAuthors();
-        this.authors = response.data;
-        
-        // Cargar los libros para cada autor
-        for (const author of this.authors) {
-          try {
-            const booksResponse = await getAuthorBooks(author._id);
-            author.books = booksResponse.data;
-          } catch (error) {
-            console.error(`Error al cargar libros para el autor ${author.name}:`, error);
-            author.books = [];
-          }
-        }
+        this.authors = response.data || [];
+        this.error = null;
       } catch (error) {
+        console.error('Error loading authors:', error);
         this.error = 'Error al cargar los autores. Por favor, intente nuevamente.';
+        this.authors = [];
       } finally {
         this.loading = false;
       }
@@ -329,5 +325,17 @@ export default {
     width: 80px;
     height: 80px;
   }
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.loading i {
+  margin-right: 0.5rem;
+  color: #1a237e;
 }
 </style> 

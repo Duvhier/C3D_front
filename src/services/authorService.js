@@ -1,12 +1,15 @@
 import axios from 'axios';
 
-const isLocal = window.location.hostname === 'localhost';
-const API_URL = isLocal
-  ? 'http://localhost:3000/api'
-  : 'https://c3-d-back-nkt5.onrender.com/api';
+const API_URL = 'http://localhost:3000/api';
 
-export const getAuthors = () => {
-  return axios.get(`${API_URL}/authors`);
+export const getAuthors = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/authors?limit=1000`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching authors:', error);
+    throw error;
+  }
 };
 
 export const getAuthor = (id) => {
@@ -27,7 +30,7 @@ export const deleteAuthor = (id) => {
 
 export const searchAuthors = async (query) => {
   try {
-    const response = await axios.get(`${API_URL}/authors/search?query=${query}`);
+    const response = await axios.get(`${API_URL}/authors/search?query=${query}&limit=1000`);
     return response.data;
   } catch (error) {
     console.error('Error searching authors:', error);
