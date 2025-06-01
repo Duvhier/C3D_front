@@ -8,18 +8,36 @@
     <div class="carousel-section">
       <h2>Libros Destacados</h2>
       <div class="carousel-container">
-        <button class="carousel-button prev" @click="prevSlide" :disabled="currentSlide === 0">
+        <button 
+          class="carousel-control prev" 
+          @click="prevSlide" 
+          :disabled="currentSlide === 0"
+          :class="{ 'disabled': currentSlide === 0 }"
+        >
           <i class="fas fa-chevron-left"></i>
         </button>
         
-        <div class="carousel">
-          <div class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-            <div v-for="(book, index) in displayedBooks" :key="book._id" class="carousel-slide">
+        <div class="carousel-wrapper">
+          <div 
+            class="carousel-track" 
+            :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
+          >
+            <div 
+              v-for="(book, index) in displayedBooks" 
+              :key="book._id" 
+              class="carousel-item"
+              :class="{ 'active': index === currentSlide }"
+            >
               <div class="book-card">
-                <div class="book-cover" :style="{ backgroundImage: `url(${getBookCover(book)})` }">
+                <div class="book-cover">
+                  <img 
+                    :src="book.coverUrl || getDefaultCover(book.title)" 
+                    :alt="book.title"
+                    @error="handleImageError"
+                  />
                   <div class="book-overlay">
                     <h3>{{ book.title }}</h3>
-                    <p>{{ book.author }}</p>
+                    <p class="author">{{ book.author }}</p>
                     <p class="genre">{{ book.genre }}</p>
                   </div>
                 </div>
@@ -28,9 +46,24 @@
           </div>
         </div>
 
-        <button class="carousel-button next" @click="nextSlide" :disabled="currentSlide >= maxSlides - 1">
+        <button 
+          class="carousel-control next" 
+          @click="nextSlide" 
+          :disabled="currentSlide >= maxSlides - 1"
+          :class="{ 'disabled': currentSlide >= maxSlides - 1 }"
+        >
           <i class="fas fa-chevron-right"></i>
         </button>
+      </div>
+
+      <div class="carousel-indicators">
+        <button 
+          v-for="(_, index) in displayedBooks" 
+          :key="index"
+          class="indicator"
+          :class="{ 'active': index === currentSlide }"
+          @click="currentSlide = index"
+        ></button>
       </div>
     </div>
 
@@ -116,6 +149,19 @@ export default {
       if (!title) return '?';
       const words = title.trim().split(' ');
       return words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
+    },
+    getDefaultCover(title) {
+      const initials = this.getInitials(title);
+      const svg = `
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100%" height="100%" fill="#f5f5f5"/>
+          <text x="50%" y="50%" font-family="Arial" font-size="24" fill="#666" text-anchor="middle" dominant-baseline="middle" font-weight="bold">${initials}</text>
+        </svg>
+      `;
+      return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    },
+    handleImageError() {
+      // Handle image loading error
     }
   },
   mounted() {
@@ -150,54 +196,77 @@ export default {
 }
 
 .carousel-section {
-  margin-bottom: 4rem;
-}
-
-.carousel-section h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #1a237e;
+  padding: 2rem 0;
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
 }
 
 .carousel-container {
   position: relative;
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  object-fit: contain;
 }
 
-.carousel {
+.carousel-wrapper {
   overflow: hidden;
   position: relative;
+  width: 100%;
+  padding: 1rem 0;
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 2rem;
 }
 
-.carousel-slide {
-  flex: 0 0 calc(100% / 3);
-  padding: 0 1rem;
+.carousel-item {
+  flex: 0 0 100%;
+  opacity: 0.5;
+  transform: scale(0.9);
+  transition: all 0.5s ease;
+}
+
+.carousel-item.active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .book-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
 }
 
 .book-cover {
-  height: 300px;
-  background-size: cover;
-  background-position: center;
   position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+}
+
+.book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.book-card:hover .book-cover img {
+  transform: scale(1.1);
 }
 
 .book-overlay {
@@ -205,60 +274,81 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  padding: 2rem 1.5rem 1.5rem;
   color: white;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.book-card:hover .book-overlay {
+  transform: translateY(0);
 }
 
 .book-overlay h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
-.book-overlay p {
-  margin: 0.25rem 0;
+.book-overlay .author {
+  font-size: 1.1rem;
   opacity: 0.9;
+  margin-bottom: 0.25rem;
 }
 
 .book-overlay .genre {
   font-size: 0.9rem;
   opacity: 0.8;
+  font-style: italic;
 }
 
-.carousel-button {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+.carousel-control {
   background: white;
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  z-index: 2;
 }
 
-.carousel-button:hover {
+.carousel-control:hover:not(.disabled) {
   background: #1a237e;
   color: white;
+  transform: scale(1.1);
 }
 
-.carousel-button:disabled {
+.carousel-control.disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.carousel-button.prev {
-  left: 0;
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
 }
 
-.carousel-button.next {
-  right: 0;
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background: #1a237e;
+  transform: scale(1.2);
 }
 
 .features-section {
@@ -291,16 +381,31 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .carousel-slide {
-    flex: 0 0 100%;
+  .carousel-container {
+    padding: 0 1rem;
   }
 
-  .hero-section {
-    padding: 2rem 1rem;
+  .carousel-control {
+    width: 40px;
+    height: 40px;
   }
 
-  .hero-section h1 {
-    font-size: 2rem;
+  .book-overlay {
+    transform: translateY(0);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5));
+    padding: 1rem;
+  }
+
+  .book-overlay h3 {
+    font-size: 1.2rem;
+  }
+
+  .book-overlay .author {
+    font-size: 1rem;
+  }
+
+  .book-overlay .genre {
+    font-size: 0.8rem;
   }
 
   .features-section {
