@@ -210,9 +210,16 @@ input {
 .preview img {
   max-width: 100%;
   max-height: 200px;
+  width: auto;
+  height: auto;
   margin-top: 0.5rem;
   border-radius: 8px;
+  object-fit: contain; 
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
+
 
 .form-actions {
   display: flex;

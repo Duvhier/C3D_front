@@ -1,252 +1,29 @@
 <template>
   <div id="app">
     <Header @search="handleSearch" />
-
-    <h1>Lista de Libros</h1>
-    <h2>Colección de libros disponibles</h2>
-    <p style="text-align:center;">Total de libros: {{ filteredBooks.length }}</p>
-
-    <p v-if="error" class="error-message">{{ error }}</p>
-
-    <BookList :books="filteredBooks" :loading="loading" :error="error" @edit-book="editBook" @delete-book="deleteBook"
-      :get-book-cover="getBookCover" />
-    <div v-if="showAddForm" class="modal-overlay">
-      <div class="modal-content">
-        <button class="modal-close" @click="showAddForm = false">&times;</button>
-        <AddBook @add-book="handleAddBook" @cancel="showAddForm = false" />
-      </div>
-    </div>
-
-    <AuthorSelector v-if="showAuthorSelector" @author-changed="handleAuthorChanged"
-      @cancel="showAuthorSelector = false" />
-    <GenreSelector v-if="showGenreSelector" @genre-changed="handleGenreChanged" @cancel="showGenreSelector = false" />
-    <AuthorList v-if="showAuthorListView" />
-    <GenreList v-if="showGenreListView" />
-
-    <div v-if="showEditForm" class="modal-overlay">
-      <div class="modal-content">
-        <button class="modal-close" @click="showEditForm = false">&times;</button>
-        <EditBook :book="editingBook" @update-book="handleUpdateBook" @cancel="showEditForm = false" />
-      </div>
-    </div>
-    <div v-if="showAddAuthorForm" class="modal-overlay">
-      <div class="modal-content">
-        <button class="modal-close" @click="showAddAuthorForm = false">&times;</button>
-        <AddAuthor @add-author="handleAddAuthor" @cancel="showAddAuthorForm = false" />
-      </div>
-    </div>
-    <div v-if="showAddGenreForm" class="modal-overlay">
-      <div class="modal-content">
-        <button class="modal-close" @click="showAddGenreForm = false">&times;</button>
-        <AddGenre @add-genre="handleGenreAdded" @cancel="showAddGenreForm = false" />
-      </div>
-    </div>
-
-    <!-- Menú FAB flotante -->
-    <div class="fab-container">
-      <!-- Botón para agregar libro -->
-      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar libro" @click="showAddForm = true">
-        <i class="fas fa-book"></i>
-      </button>
-
-      <!-- Botón para agregar género -->
-      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar género" @click="showGenreSelector = true">
-        <i class="fas fa-tag"></i>
-      </button>
-
-      <!-- Botón para agregar autor -->
-      <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar autor" @click="toggleAddAuthorForm">
-        <i class="fas fa-user-plus"></i>
-      </button>
-
-      <!-- Botón principal -->
-      <button class="fab main-fab" @click="toggleFab" title="Menú">
-        <i class="fas fa-plus" :class="{ 'rotate': fabOpen }"></i>
-      </button>
-    </div>
-
+    <router-view :search-query="searchQuery"></router-view>
     <Footer />
   </div>
 </template>
 
 <script>
-import { getBooks, addBook, updateBook, deleteBook } from './services/bookService';
 import Header from './components/Header.vue';
-import AddBook from './components/AddBook.vue';
-import EditBook from './components/EditBook.vue';
-import BookList from './components/BookList.vue';
 import Footer from './components/Footer.vue';
-import AuthorSelector from './components/AuthorSelector.vue';
-import GenreSelector from './components/GenreSelector.vue';
-import AuthorList from './components/AuthorList.vue';
-import GenreList from './components/GenreList.vue';
-import AddAuthor from './components/AddAuthor.vue';
-import { addAuthor } from './services/authorService';
-import AddGenre from './components/AddGenre.vue';
-import { addGenre } from './services/genreService';
-
 
 export default {
   name: 'App',
-  components: { Header, AddBook, EditBook, BookList, Footer, AuthorSelector, GenreSelector, AuthorList, GenreList, AddAuthor, AddGenre },
+  components: { Header, Footer },
   data() {
     return {
-      authors: [],
-      genres: [],
-      books: [],
-      loading: true,
-      error: null,
-      showAddForm: false,
-      showEditForm: false,
-      editingBook: null,
-      searchQuery: '',
-      coverColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'],
-      showAuthorSelector: false,
-      showGenreSelector: false,
-      fabOpen: false,
-      selectedAuthor: null,
-      selectedGenre: null,
-      showAuthorListView: false,
-      showGenreListView: false,
-      showAddAuthorForm: false,
-      showAddGenreForm: false
+      searchQuery: ''
     };
   },
-  computed: {
-    filteredBooks() {
-      if (!this.searchQuery) return this.books;
-      const query = this.searchQuery.toLowerCase();
-      return this.books.filter(book =>
-        (book.title || '').toLowerCase().includes(query) ||
-        (book.author || '').toLowerCase().includes(query) ||
-        (book.genre || '').toLowerCase().includes(query)
-      );
-    }
-  },
   methods: {
-    async loadBooks() {
-      try {
-        this.loading = true;
-        const response = await getBooks();
-        this.books = response.data;
-      } catch (error) {
-        this.error = 'Error al cargar los libros. Por favor, intente nuevamente.';
-      } finally {
-        this.loading = false;
-      }
-    },
-    async handleAddBook(bookData) {
-      try {
-        const response = await addBook(bookData);
-        this.books.push(response.data);
-        this.showAddForm = false;
-        this.error = null;
-      } catch (error) {
-        this.error = 'Error al agregar el libro. Por favor, intente nuevamente.';
-      }
-    },
-    editBook(book) {
-      this.editingBook = { ...book };
-      this.showEditForm = true;
-    },
-    async handleUpdateBook(updatedBook) {
-      try {
-        const response = await updateBook(updatedBook._id, updatedBook);
-        const index = this.books.findIndex(b => b._id === updatedBook._id);
-        if (index !== -1) this.books[index] = response.data;
-        this.showEditForm = false;
-        this.editingBook = null;
-      } catch (error) {
-        this.error = 'Error al actualizar el libro. Intente nuevamente.';
-      }
-    },
-    async deleteBook(id) {
-      try {
-        await deleteBook(id); 
-        this.books = this.books.filter(book => book._id !== id);
-      } catch (error) {
-        this.error = 'Error al eliminar el libro. Intente nuevamente.';
-      }
-    },
     handleSearch(query) {
       this.searchQuery = query;
-    },
-    getBookCover(book) {
-      if (book.coverUrl) return book.coverUrl;
-      const title = book.title || '';
-      const hash = title.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
-      const colorIndex = Math.abs(hash) % this.coverColors.length;
-      const backgroundColor = this.coverColors[colorIndex];
-      const initials = this.getInitials(title);
-      const svg = `
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100%" height="100%" fill="${backgroundColor}"/>
-          <text x="50%" y="50%" font-family="Arial" font-size="24" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">${initials}</text>
-        </svg>
-      `;
-      return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-    },
-    getInitials(title) {
-      if (!title) return '?';
-      const words = title.trim().split(' ');
-      return words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
-    },
-    handleAuthorChanged(author) {
-      this.selectedAuthor = author;
-      this.showAuthorSelector = false;
-    },
-    async handleAuthorAdded(author) {
-      const response = await addAuthor(author);
-      this.authors.push(response.data);
-      this.showAddAuthorForm = false;
-    },
-
-    async handleGenreAdded(genre) {
-      const response = await addGenre(genre);
-      this.genres.push(response.data);
-      this.showAddGenreForm = false;
-    },
-    async handleAddAuthor(authorData) {
-      try {
-        const response = await addAuthor(authorData);
-        // Opcional: actualizar lista de autores si la usas globalmente
-        this.showAddAuthorForm = false;
-        this.error = null;
-      } catch (error) {
-        this.error = 'Error al agregar el autor. Intente nuevamente.';
-      }
-    },
-
-    handleGenreChanged(genre) {
-      this.selectedGenre = genre;
-      this.showGenreSelector = false;
-    },
-    toggleAuthorListView() {
-      this.showAuthorListView = true;
-      this.showGenreListView = false;
-    },
-    toggleGenreListView() {
-      this.showAuthorListView = false;
-      this.showGenreListView = true;
-    },
-    toggleFab() {
-      this.fabOpen = !this.fabOpen;
-    },
-    showAddBookModal() {
-      this.showAddForm = true;
-    },
-    toggleAddAuthorForm() {
-      this.showAddAuthorForm = true;
-    },
-    toggleAddGenreForm() {
-      this.showAddGenreForm = true;
     }
-  },
-  mounted() {
-    this.loadBooks();
   }
 };
-
 </script>
 
 <style>
@@ -794,7 +571,6 @@ h2 {
 .fab:nth-child(4).fab-show {
   transition-delay: 0.15s;
 }
-
 
 /* Colores individuales */
 .fab-option:nth-child(1) {

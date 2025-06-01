@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2>Agregar Nuevo Autor</h2>
+    <h2>Editar Autor</h2>
     <form @submit.prevent="handleSubmit" class="author-form">
       <div class="form-group">
         <label for="name">Nombre del Autor</label>
         <input 
           type="text" 
           id="name" 
-          v-model="author.name" 
+          v-model="editedAuthor.name" 
           required 
           placeholder="Ingrese el nombre del autor"
         >
@@ -18,17 +18,17 @@
         <input 
           type="url" 
           id="coverUrl" 
-          v-model="author.coverUrl" 
+          v-model="editedAuthor.coverUrl" 
           placeholder="Ingrese la URL de la imagen del autor"
         >
-        <div v-if="author.coverUrl" class="cover-preview">
-          <img :src="author.coverUrl" alt="Vista previa" class="preview-image">
+        <div v-if="editedAuthor.coverUrl" class="cover-preview">
+          <img :src="editedAuthor.coverUrl" alt="Vista previa" class="preview-image">
         </div>
       </div>
 
       <div class="form-actions">
         <button type="submit" class="submit-button">
-          <i class="fas fa-save"></i> Guardar
+          <i class="fas fa-save"></i> Guardar Cambios
         </button>
         <button type="button" class="cancel-button" @click="$emit('cancel')">
           <i class="fas fa-times"></i> Cancelar
@@ -40,22 +40,29 @@
 
 <script>
 export default {
-  name: 'AddAuthor',
+  name: 'EditAuthor',
+  props: {
+    author: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      author: {
-        name: '',
-        coverUrl: ''
-      }
+      editedAuthor: { ...this.author }
     };
   },
   methods: {
     handleSubmit() {
-      this.$emit('add-author', { ...this.author });
-      this.author = {
-        name: '',
-        coverUrl: ''
-      };
+      this.$emit('update-author', { ...this.editedAuthor });
+    }
+  },
+  watch: {
+    author: {
+      handler(newAuthor) {
+        this.editedAuthor = { ...newAuthor };
+      },
+      deep: true
     }
   }
 };
@@ -146,4 +153,4 @@ export default {
 .cancel-button:hover {
   background-color: #d32f2f;
 }
-</style>
+</style> 

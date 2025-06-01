@@ -1,16 +1,13 @@
-import axios from 'axios';
+import axios from 'axios'; 
 
 const isLocal = window.location.hostname === 'localhost';
 
 const API_URL = isLocal
-  ? 'http://localhost:3000' // Para desarrollo local
-  : 'https://c3-d-back-nkt5.onrender.com'; // Para producción (Render)
-
+  ? 'http://localhost:3000/api/genres' // Desarrollo
+  : 'https://c3-d-back-nkt5.onrender.com/api/genres'; // Producción
 
 export const getGenres = async () => {
-
-
-try {
+  try {
     const response = await axios.get(API_URL);
     return response.data;
   } catch (error) {
@@ -31,7 +28,7 @@ export const addGenre = async (genre) => {
 
 export const updateGenre = async (id, genre) => {
   try {
-    const response = await axios.put(`${API_URL}/api/genres/${id}`, genre);
+    const response = await axios.put(`${API_URL}/${id}`, genre);
     return response.data;
   } catch (error) {
     console.error('Error updating genre:', error);
@@ -41,7 +38,7 @@ export const updateGenre = async (id, genre) => {
 
 export const deleteGenre = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/genres/${id}`);
+    const response = await axios.delete(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting genre:', error);
@@ -51,7 +48,7 @@ export const deleteGenre = async (id) => {
 
 export const getGenreById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/api/genres/${id}`);
+    const response = await axios.get(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching genre by ID:', error);
@@ -61,7 +58,7 @@ export const getGenreById = async (id) => {
 
 export const searchGenres = async (query) => {
   try {
-    const response = await axios.get(`${API_URL}/api/genres/search?query=${query}`);
+    const response = await axios.get(`${API_URL}/search?query=${query}`);
     return response.data;
   } catch (error) {
     console.error('Error searching genres:', error);
@@ -71,14 +68,10 @@ export const searchGenres = async (query) => {
 
 export const getGenreBooks = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/api/genres/${id}/books`);
+    const response = await axios.get(`${API_URL}/${id}/books`);
     return response.data;
   } catch (error) {
     console.error('Error fetching genre books:', error);
     throw error;
   }
 };
-
-
-
-
