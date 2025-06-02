@@ -33,6 +33,10 @@
       },
       handleChange() {
         this.$emit('author-changed', this.selected);
+      },
+      async refreshAuthors() {
+        await this.fetchAuthors();
+        this.selected = ''; // Reset selected author when refreshing
       }
     }
   };

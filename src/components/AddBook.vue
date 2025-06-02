@@ -15,7 +15,7 @@
         </div>
 
         <div class="form-group">
-          <AuthorSelector @author-changed="updateAuthor" />
+          <AuthorSelector ref="authorSelector" @author-changed="updateAuthor" />
         </div>
 
         <div class="form-group">
@@ -60,6 +60,12 @@ import GenreSelector from './GenreSelector.vue';
 
 export default {
   components: { AuthorSelector, GenreSelector },
+  props: {
+    isVisible: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       title: '',
@@ -70,6 +76,14 @@ export default {
       error: '',
       isFormValid: false
     };
+  },
+  watch: {
+    isVisible(newValue) {
+      if (newValue) {
+        // When the modal becomes visible, refresh the author list
+        this.$refs.authorSelector.refreshAuthors();
+      }
+    }
   },
   methods: {
     updateAuthor(authorName) {
@@ -220,7 +234,6 @@ input {
   margin-right: auto;
 }
 
-
 .form-actions {
   display: flex;
   gap: 10px;
@@ -265,5 +278,15 @@ button:disabled {
   color: red;
   font-size: 14px;
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  .add-book-container {
+    padding: 10px;
+  }
+
+  .add-book-form-wrapper {
+    max-width: 100%;
+  }
 }
 </style>
