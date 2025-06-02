@@ -54,6 +54,7 @@ export default {
       this.$emit('add-author', { ...this.author });
       this.author = {
         name: '',
+        nationality: '',
         coverUrl: ''
       };
     }
