@@ -14,6 +14,17 @@
       </div>
 
       <div class="form-group">
+        <label for="nacionality">Nacionalidad</label>
+        <input
+        type="text"
+        id="nacionality"
+        v-model="author.nacionality"
+        required
+        placeholder="Ingrese la nacionalidad del autor"
+        >
+      </div>
+
+      <div class="form-group">
         <label for="coverUrl">URL de la Imagen</label>
         <input 
           type="url" 
@@ -45,6 +56,7 @@ export default {
     return {
       author: {
         name: '',
+        nationality: '',
         coverUrl: ''
       }
     };

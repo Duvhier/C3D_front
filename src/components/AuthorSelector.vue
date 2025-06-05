@@ -1,50 +1,39 @@
 <template>
-    <div>
-      <label for="author">Autor</label>
-      <select v-model="selected" @change="handleChange">
-        <option disabled value="">Selecciona un autor</option>
-        <option v-for="a in authors" :key="a._id" :value="a.name">{{ a.name }}</option>
-      </select>  
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'AuthorSelector',
-    data() {
-      return {
-        authors: [],
-        selected: '',
-      };
-    },
-    emits: ['author-changed'],
-    mounted() {
-      this.fetchAuthors();
-    },
-    methods: {
-      async fetchAuthors() {
-        try {
-          const res = await fetch('https://c3-d-back-nkt5.onrender.com/api/authors'); 
-          const data = await res.json();
-          this.authors = data;
-        } catch (err) {
-          console.error('Error cargando autores:', err);
-        }
-      },
-      handleChange() {
-        this.$emit('author-changed', this.selected);
-      },
-      async refreshAuthors() {
-        await this.fetchAuthors();
-        this.selected = ''; // Reset selected author when refreshing
-      }
+  <select v-model="selectedAuthor" @change="emitirCambio">
+    <option disabled value="">Seleccione un autor</option>
+    <option v-for="author in authors" :key="author.id" :value="author.name">
+      {{ author.name }}
+    </option>
+  </select>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'AuthorSelector',
+  data() {
+    return {
+      authors: [],         // Lista de autores obtenida de la API
+      selectedAuthor: ''   // Nombre del autor seleccionado
+    };
+  },
+  created() {
+    // Obtener la lista de autores; la respuesta tiene forma { data: [...] }
+    axios.get('https://c3-d-back-nkt5.onrender.com/api/authors?limit=0')
+      .then(response => {
+        // Asignar el arreglo real de autores desde response.data.data
+        this.authors = response.data.data;
+      })
+      .catch(error => {
+        console.error('Error cargando autores:', error);
+      });
+  },
+  methods: {
+    emitirCambio() {
+      // Emitir el evento personalizado con el nombre del autor seleccionado
+      this.$emit('author-changed', this.selectedAuthor);
     }
-  };
-  </script>
-  
-  <style scoped>
-  .form-group {
-    margin-bottom: 10px;
   }
-  </style>
-  
+}
+</script>

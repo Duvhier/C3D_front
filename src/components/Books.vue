@@ -11,7 +11,7 @@
     <div v-if="showAddForm" class="modal-overlay">
       <div class="modal-content">
         <button class="modal-close" @click="showAddForm = false">&times;</button>
-        <AddBook @add-book="handleAddBook" @cancel="showAddForm = false" />
+        <AddBook @add-book="handleAddBook" @cancel="showAddForm = false" :isVisible="showAddForm" />
       </div>
     </div>
 
@@ -28,7 +28,6 @@
       <button class="fab fab-option" :class="{ 'fab-show': fabOpen }" title="Agregar libro" @click="showAddForm = true">
         <i class="fas fa-book"></i>
       </button>
-
       <!-- Botón principal -->
       <button class="fab main-fab" @click="toggleFab" title="Menú">
         <i class="fas fa-plus" :class="{ 'rotate': fabOpen }"></i>
