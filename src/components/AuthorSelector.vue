@@ -20,10 +20,10 @@ export default {
   },
   created() {
     // Obtener la lista de autores; la respuesta tiene forma { data: [...] }
-    axios.get('https://c3-d-back-nkt5.onrender.com/api/authors?limit=0')
+    axios.get('https://c3-d-back-nkt5.onrender.com/api/authors')
       .then(response => {
         // Asignar el arreglo real de autores desde response.data.data
-        this.authors = response.data.data;
+        this.authors = response.data;
       })
       .catch(error => {
         console.error('Error cargando autores:', error);

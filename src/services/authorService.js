@@ -4,8 +4,8 @@ const API_URL = 'https://c3-d-back-nkt5.onrender.com/api';
 
 export const getAuthors = async () => {
   try {
-    const response = await axios.get(`${API_URL}/authors?limit=0`);
-    return response.data;
+    const response = await axios.get(`${API_URL}/authors`);
+    return response;
   } catch (error) {
     console.error('Error fetching authors:', error);
     throw error;

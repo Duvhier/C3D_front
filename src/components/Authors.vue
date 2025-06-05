@@ -2,7 +2,7 @@
   <div>
     <h1>Lista de Autores</h1>
     <h2>Colección de autores disponibles</h2>
-    <p style="text-align:center;">Total de autores: {{ authors.length }}</p>
+    <p style="text-align:center;">Total de autores: {{ authors ? authors.length : 0 }}</p>
 
     <p v-if="error" class="error-message">{{ error }}</p>
 
@@ -10,7 +10,7 @@
       <i class="fas fa-spinner fa-spin"></i> Cargando autores...
     </div>
 
-    <div v-else class="authors-grid">
+    <div v-else-if="authors && authors.length > 0" class="authors-grid">
       <div v-for="author in filteredAuthors" :key="author._id" class="author-card">
         <div class="author-cover">
           <img 
@@ -33,6 +33,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div v-else class="no-authors">
+      No hay autores disponibles.
     </div>
 
     <div v-if="showAddForm" class="modal-overlay">
@@ -87,9 +90,9 @@ export default {
   },
   computed: {
     filteredAuthors() {
-      if (!this.searchQuery) return this.authors;
+      if (!this.searchQuery) return this.authors || [];
       const query = this.searchQuery.toLowerCase();
-      return this.authors.filter(author =>
+      return (this.authors || []).filter(author =>
         (author.name || '').toLowerCase().includes(query)
       );
     }
