@@ -6,6 +6,8 @@
 
     <p v-if="error" class="error-message">{{ error }}</p>
 
+    <BookSort @sort="handleSort" />
+
     <BookList :books="filteredBooks" :loading="loading" :error="error" @edit-book="editBook" @delete-book="deleteBook"
       :get-book-cover="getBookCover" />
     <div v-if="showAddForm" class="modal-overlay">
@@ -41,10 +43,11 @@ import { getBooks, addBook, updateBook, deleteBook } from '../services/bookServi
 import AddBook from './AddBook.vue';
 import EditBook from './EditBook.vue';
 import BookList from './BookList.vue';
+import BookSort from './BookSort.vue';
 
 export default {
   name: 'Books',
-  components: { AddBook, EditBook, BookList },
+  components: { AddBook, EditBook, BookList, BookSort },
   props: {
     searchQuery: {
       type: String,
@@ -60,18 +63,47 @@ export default {
       showEditForm: false,
       editingBook: null,
       coverColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'],
-      fabOpen: false
+      fabOpen: false,
+      sortConfig: {
+        field: 'title',
+        ascending: true
+      }
     };
   },
   computed: {
     filteredBooks() {
-      if (!this.searchQuery) return this.books;
-      const query = this.searchQuery.toLowerCase();
-      return this.books.filter(book =>
-        (book.title || '').toLowerCase().includes(query) ||
-        (book.author || '').toLowerCase().includes(query) ||
-        (book.genre || '').toLowerCase().includes(query)
-      );
+      let result = this.books;
+      
+      // Aplicar búsqueda
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        result = result.filter(book =>
+          (book.title || '').toLowerCase().includes(query) ||
+          (book.author || '').toLowerCase().includes(query) ||
+          (book.genre || '').toLowerCase().includes(query)
+        );
+      }
+
+      // Aplicar ordenamiento
+      result = [...result].sort((a, b) => {
+        let aValue = a[this.sortConfig.field];
+        let bValue = b[this.sortConfig.field];
+
+        // Manejar casos especiales
+        if (this.sortConfig.field === 'publishedDate') {
+          aValue = new Date(aValue || 0);
+          bValue = new Date(bValue || 0);
+        } else {
+          aValue = (aValue || '').toString().toLowerCase();
+          bValue = (bValue || '').toString().toLowerCase();
+        }
+
+        if (aValue < bValue) return this.sortConfig.ascending ? -1 : 1;
+        if (aValue > bValue) return this.sortConfig.ascending ? 1 : -1;
+        return 0;
+      });
+
+      return result;
     }
   },
   methods: {
@@ -141,6 +173,9 @@ export default {
     },
     toggleFab() {
       this.fabOpen = !this.fabOpen;
+    },
+    handleSort(sortConfig) {
+      this.sortConfig = sortConfig;
     }
   },
   mounted() {
