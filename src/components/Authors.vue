@@ -22,7 +22,7 @@
         </div>
         <div class="author-info">
           <h3>{{ author.name }}</h3>
-          <p class="author-books">Libros: {{ author.books ? author.books.length : 0 }}</p>
+          <p class="author-books">Libros: {{ author.books ? author.books.length : (author.booksCount || author.bookCount || 0) }}</p>
           <div class="author-actions">
             <button class="edit-button" @click="editAuthor(author)" title="Editar autor">
               <i class="fas fa-edit"></i>
@@ -75,6 +75,12 @@ import EditAuthor from './EditAuthor.vue';
 export default {
   name: 'Authors',
   components: { AddAuthor, EditAuthor },
+  props: {
+    searchQuery: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       authors: [],
@@ -83,7 +89,6 @@ export default {
       showAddForm: false,
       showEditForm: false,
       editingAuthor: null,
-      searchQuery: '',
       fabOpen: false,
       coverColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71']
     };
@@ -102,6 +107,7 @@ export default {
       try {
         this.loading = true;
         const response = await getAuthors();
+        console.log('Datos de autores:', response.data);
         this.authors = response.data || [];
         this.error = null;
       } catch (error) {

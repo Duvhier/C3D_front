@@ -49,7 +49,12 @@ export default {
   },
   methods: {
     handleSearch() {
-      this.$emit('search', this.searchQuery);
+      this.$emit('search', this.searchQuery.trim());
+    }
+  },
+  watch: {
+    searchQuery(newValue) {
+      this.handleSearch();
     }
   }
 };
