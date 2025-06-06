@@ -22,7 +22,6 @@
         </div>
         <div class="author-info">
           <h3>{{ author.name }}</h3>
-          <p class="author-books">Libros: {{ author.books ? author.books.length : (author.booksCount || author.bookCount || 0) }}</p>
           <div class="author-actions">
             <button class="edit-button" @click="editAuthor(author)" title="Editar autor">
               <i class="fas fa-edit"></i>
